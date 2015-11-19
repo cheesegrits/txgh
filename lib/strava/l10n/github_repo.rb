@@ -21,6 +21,10 @@ module Strava
         @branch
       end
 
+      def config
+        @config
+      end
+
       def transifex_project
         @transifex_project = @transifex_project ||
             Strava::L10n::TransifexProject.new(@config['push_source_to'])

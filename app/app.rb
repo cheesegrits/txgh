@@ -7,11 +7,11 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'strava/l10n/github_repo'
 require 'strava/l10n/transifex_project'
+require 'logger'
 
 module L10n
 
   class Application < Sinatra::Base
-
     use Rack::Auth::Basic, 'Restricted Area' do |username, password|
       username == 'foo' and password == 'bar'
     end
@@ -37,6 +37,9 @@ module L10n
     configure :development do
       register Sinatra::Reloader
     end
+
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::WARN
 
     def initialize(app = nil)
       super(app)
@@ -71,6 +74,7 @@ module L10n
         hook_data = JSON.parse(request.body.read, symbolize_names: true)
       end
       github_repo_branch = "#{hook_data[:ref]}"
+      logger.debug(github_repo_branch)
       github_repo_name = "#{hook_data[:repository][:owner][:name]}/#{hook_data[:repository][:name]}"
       github_repo = Strava::L10n::GitHubRepo.new(github_repo_name)
       transifex_project = github_repo.transifex_project
